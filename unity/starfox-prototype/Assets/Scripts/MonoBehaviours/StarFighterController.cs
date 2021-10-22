@@ -1,11 +1,17 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Generated;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace MonoBehaviours
 {
+    public interface IWeapon
+    {
+        public void Fire();
+    }
+
     [Serializable]
     public class PointerPressData
     {
@@ -57,6 +63,7 @@ namespace MonoBehaviours
         [SerializeField] private PointerPressData pressStartData;
         [SerializeField] private PointerPressData pressEndData;
         [SerializeField] private Vector3 targetLocalPosition;
+        private float _fireVersusMoveThreshold = 0.1f;
 
         private StarFighterControls _playerActions;
         private void Awake() => _playerActions = new StarFighterControls();
@@ -68,6 +75,12 @@ namespace MonoBehaviours
             _playerActions.Player.Interact.canceled += HandleInteractCancelled;
             PressEndDataCollected += CalculateSwipeFacts;
             SwipeInfoCalculated += ManeuverStarFighter;
+            SwipeInfoCalculated += DetermineFireCommand;
+        }
+        private void DetermineFireCommand(SwipeInfo swipeInfo)
+        {
+            if (swipeInfo.Timing >= _fireVersusMoveThreshold) return;
+            Fire();
         }
 
         private void Update()
@@ -80,6 +93,8 @@ namespace MonoBehaviours
 
         private void ManeuverStarFighter(SwipeInfo swipeInfo)
         {
+            if (swipeInfo.Timing <= _fireVersusMoveThreshold) return;
+
             var newLocalPosition = new Vector3(swipeInfo.Direction.x, swipeInfo.Direction.y, 0) * speed;
 
             targetLocalPosition = newLocalPosition;
@@ -123,6 +138,18 @@ namespace MonoBehaviours
             );
 
             PressEndDataCollected?.Invoke(); // No point passing in unused args
+        }
+
+        public void Fire()
+        {
+            Debug.Log("Firing!");
+            var weapons = GetComponentsInChildren<IWeapon>();
+
+            foreach (var weapon in weapons)
+            {
+                Debug.Log($"Firing weapon {weapon}");
+                weapon.Fire();
+            }
         }
     }
 }
