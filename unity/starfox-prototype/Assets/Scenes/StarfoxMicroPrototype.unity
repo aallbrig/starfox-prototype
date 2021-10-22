@@ -399,6 +399,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2924559718900093000, guid: 0d22f45da7af749d28de16bbeb21e58f, type: 3}
+      propertyPath: m_Name
+      value: Fox Engine (Center)
+      objectReference: {fileID: 0}
     - target: {fileID: 7579081434780472678, guid: 0d22f45da7af749d28de16bbeb21e58f, type: 3}
       propertyPath: m_RootOrder
       value: 3
